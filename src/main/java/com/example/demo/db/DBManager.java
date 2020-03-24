@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import com.example.demo.vo.BookVo;
 import com.example.demo.vo.CartVo;
 import com.example.demo.vo.ChatVo;
 import com.example.demo.vo.GoodsVo;
@@ -27,6 +28,9 @@ public class DBManager {
 			System.out.println(e.getMessage());
 		}
 	}
+	
+	
+	
 	
 	
 	public static MemberVo isMember(MemberVo m) {
@@ -55,6 +59,13 @@ public class DBManager {
 		session.commit();
 		session.close();
 		return re;
+	}
+	
+	public static List<BookVo> listBook(){
+		SqlSession session = factory.openSession();
+		List<BookVo> list = session.selectList("book.selectAll");
+		session.close();
+		return list;
 	}
 	
 	public static List<ScheduleVo> listSchedule(){
