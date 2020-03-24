@@ -30,6 +30,36 @@ public class DBManager {
 	}
 	
 	
+	public static int insertBook(BookVo b) {
+		int re =  -1;
+		SqlSession session = factory.openSession();
+		re= session.insert("book.insert",b);
+		session.commit();
+		session.close();
+		return re;
+	}
+	
+	public static int updateBook(BookVo b) {
+		int re =  -1;
+		SqlSession session = factory.openSession();
+		re= session.update("book.update",b);
+		session.commit();
+		session.close();
+		return re;
+	}
+	
+	public static int deleteBook(BookVo b) {
+		int re =  -1;
+		SqlSession session = factory.openSession();
+		re= session.delete("book.delete",b);
+		session.commit();
+		session.close();
+		return re;
+	}
+	
+	
+	
+	
 	
 	
 	

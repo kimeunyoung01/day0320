@@ -1,7 +1,5 @@
 package com.example.demo.controller;
 
-import java.awt.print.Book;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,15 +10,18 @@ import com.example.demo.vo.BookVo;
 public class BookController {
 
 	@RequestMapping("/upateBook")
-	public String upateBook(String oper) {
+	public String upateBook(String oper, BookVo b) {		
 		String str = "";		
+		System.out.println("oper:"+oper);
+		System.out.println("책번호:"+b.getBookid());
+		
 		if(oper.equals("add"))
-		{
-			
+		{	
+			DBManager.insertBook(b);
 		}else if(oper.equals("edit")) {
-			
+			DBManager.updateBook(b);
 		}else if(oper.equals("del")) {
-			
+			DBManager.deleteBook(b);
 		}	
 		return str;
 	}

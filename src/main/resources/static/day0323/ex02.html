@@ -12,6 +12,17 @@
 <script type="text/javascript" src="/jquery-ui-1.12.1/jquery-ui.min.js"></script>
 <script type="text/javascript">
 	$(function(){		
+		
+		var myDlg = {
+			onclickSubmit:function(params){
+				var selectedRow = $("#grid").getGridParam("selrow");
+				rowData = $("#grid").getRowData(selectedRow);
+				return {bookid:rowData.bookid};	
+			}	
+		}
+		
+		
+		
 		$("#grid").jqGrid({
 			url:"/getBook",
 			editurl:"/upateBook",
@@ -25,7 +36,7 @@
 				{name:"publisher",index:"publisher",width:200, editable:true},
 				{name:"price",index:"price",width:100, editable:true}
 			]
-		}).navGrid("#pager",{search:true,edit:true,add:true,del:true});
+		}).navGrid("#pager",{search:true,edit:true,add:true,del:true},{},{},myDlg);
 	});
 </script>
 </head>
