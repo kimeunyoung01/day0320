@@ -95,6 +95,9 @@ $(function(){
 				moveSlider(index);
 			});
 		});
+		
+		var i = Math.round(Math.random()*data.length-1);
+		moveSlider(i);
 	});
 	
 	function moveSlider(index){
@@ -120,8 +123,7 @@ $(function(){
 		moveSlider(index);
 	});*/
 	
-	var i = Math.round(Math.random()*4);
-	moveSlider(i);
+	
 });
 </script>
 </head>
