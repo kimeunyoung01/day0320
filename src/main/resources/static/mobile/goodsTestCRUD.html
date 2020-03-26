@@ -12,6 +12,22 @@
 		
 <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
 <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$("#homePage").bind("pageshow", function(){
+			console.log("페이지 전환")
+			var userid = sessionStorage.getItem("userid");
+			console.log(userid);
+			if(userid == null){
+				$(".btnLogout").hide();
+				$("#btnLogin").show();
+			}else{
+				$(".btnLogout").show();
+				$("#btnLogin").hide();
+			}
+		});
+	});
+</script>
 <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 <script type="text/javascript">
 	$(function(){
@@ -20,12 +36,23 @@
 			var member = $("#f").serialize();
 			$.ajax("/login", {data:member,success:function(userid){
 				console.log(userid);
-				
+				if(userid != "no"){
+					$(".btnLogout").show();
+					$("#btnLogin").hide();
+					sessionStorage.setItem("userid",userid);
+					$.mobile.changePage("#listPage",{transition:"slide"});
+				}
 			}});
 		});
 		
+		$(".btnLogout").click(function(){
+			console.log("로그아웃");
+			sessionStorage.removeItem("userid");
+			$.mobile.changePage("#homePage",{transition:"slide"})
+		});
 		
-		$("#btnLogout").hide();
+		
+		//$(".btnLogout").hide();
 		
 		var arr;
 		$.getJSON("/goodsList",function(data){
@@ -36,12 +63,12 @@
 				$(a).click(function(){
 					var idx = $(this).attr("idx");
 					var sg = arr[idx];
-					$("#img").attr("src", "/img/"+sg.fname);
-					$("#item").html(sg.item);
-					$("#no").html(sg.no);
-					$("#qty").html(sg.qty);
-					$("#price").html(sg.price);
-					$("#detail").html(sg.detail);
+					$("#detail_img").attr("src", "/img/"+sg.fname);
+					$("#detail_item").html(sg.item);
+					$("#detail_no").html(sg.no);
+					$("#detail_qty").html(sg.qty);
+					$("#detail_price").html(sg.price);
+					$("#detail_detail").html(sg.detail);
 				});			
 				var table = $("<table></table>");
 				var tr = $("<tr></tr>");
@@ -58,6 +85,35 @@
 				$("#list").append(li);
 			});
 		});
+		
+		//"상품목록" 버튼에 대한 이벤트 처리
+		//로그인 했는지 판별하여 처리합니다.
+		$("#btnList").click(function(){
+			var userid = sessionStorage.getItem("userid");
+			if(userid == null){
+				alert("로그인 하세요");
+			}else{
+				$.mobile.changePage("#listPage",{transition:"flip"});
+			}
+		});
+		
+		
+		//상품등록
+		$("#btnAddOk").click(function(){
+			//var goods =$("#inputForm").serialize();
+			var goods =  new FormData(document.getElementById("inputForm"));
+			
+			$.ajax("/insertGoods",{
+				data:goods,
+				processData:false,
+				contentType:false,
+				type:"POST",
+				success:function(r){
+				 alert(r);
+			}});
+		})
+		
+		
 	});
 	
 </script>
@@ -68,25 +124,38 @@
 	<div data-role="page" id="homePage">
 		<div data-role="header"><h1>비트몰</h1></div>
 		<div data-role="content">	
-			<div class="ui-grid-a">
+			<div class="ui-grid-c">
 				<div class="ui-block-a">
 					<a href="#loginForm"  data-role="button" id="btnLogin" data-icon="gear">로그인</a>
-					<a data-role="button" id="btnLogout" data-icon="gear">로그아웃</a>
+					<a data-role="button" class="btnLogout" data-icon="gear">로그아웃</a>
 				</div>
 				<div class="ui-block-b">
 					<a data-role="button" id="btnList" data-icon="grid">상품목록</a>
+				</div>				
+				<div class="ui-block-c">
+					<a href="#insertPage" data-role="button" data-icon="plus" >상품등록</a>
 				</div>
+				
+				
 			</div>		
 		</div>
 		<div data-role="footer" data-position="fixed">비트몰</div>
 	</div>
 	
 	<div data-role="page" id="listPage">
-		<div data-role="header"><h1>상품목록</h1></div>
+		<div data-role="header">
+			<h1>상품목록</h1>
+			<a href="#" data-role="button" class="btnLogout">로그아웃</a>			
+			<a href="#" data-role="button" data-rel="back">이전</a>
+		</div>
+		
 		<div data-role="content">		
 			<ul data-role="listview" id="list"></ul>	
 		</div>
-		<div data-role="footer" data-position="fixed">비트몰</div>
+		<div data-role="footer" data-position="fixed">
+			<h2>비트몰</h2>
+			<a href="#insertPage" data-role="button">상품등록</a>
+		</div>
 	</div>
 	
 	<div data-role="page" id="detailPage" >
@@ -100,26 +169,26 @@
 					<table>
 						<tr>
 							<td style="padding-right:5px">
-								<img id="img">
+								<img id="detail_img">
 							</td>
 							
 							<td style="padding-left:5px">
 								<table>
 									<tr style="padding:5px">
 										<td style="padding:5px">상품번호:</td>
-										<td id="no"></td>
+										<td id="detail_no"></td>
 									</tr>
 									<tr style="padding:5px">
 										<td style="padding:5px">상품명:</td>
-										<td id="item"></td>
+										<td id="detail_item"></td>
 									</tr>
 									<tr style="padding:5px">
 										<td style="padding:5px">수량:</td>
-										<td id="qty"></td>
+										<td id="detail_qty"></td>
 									</tr>
 									<tr style="padding:5px">
 										<td style="padding:5px">상세설명:</td>
-										<td id="detail"></td>
+										<td id="detail_detail"></td>
 									</tr>
 								</table>
 							</td>
@@ -163,6 +232,59 @@
 		</div>
 		<div data-role="footer" data-position="fixed">비트몰</div>
 	</div>	
+	
+	
+	<div data-role="page" id="insertPage">
+		<div data-role="header">
+			<h1>상품등록</h1>
+			<a href="#" data-role="button" data-rel="back">이전</a>
+			<a href="#" data-role="button" id="btnAddOk">등록</a>
+		</div>
+		
+		<div data-role="content">		
+				<form id="inputForm" method="post" enctype="multipart/form-data">
+				<div data-role="fieldcontain">
+					<label for="no">상품번호:</label>
+					<input type="number" name="no" id="no"><br>
+				</div>
+				<div data-role="fieldcontain">
+					<label for="item">상품명:</label>
+					<input type="text" name="item" id="item"><br>
+				</div>
+				<div data-role="fieldcontain">
+					<label for="qty">수량:</label>
+					<input type="number" name="qty" id="qty"><br>
+				</div>
+				<div data-role="fieldcontain">
+					<label for="price">단가:</label>
+					<input type="number" name="price" id="price"><br>
+				</div>
+				<div data-role="fieldcontain">
+					<label for="fname">파일:</label>
+					<input type="file" name="uploadFile" id="uploadFile"><br>
+				</div>
+				<div data-role="fieldcontain">
+					<label for="detail">상세설명:</label>
+					<textarea rows="5" cols="60" name="detail" id="detail"></textarea><br>
+				</div>
+			</form>	
+		</div>
+		<div data-role="footer" data-position="fixed">비트몰</div>
+	</div>
+	
+	<div data-role="page" id="updatePage">
+		<div data-role="header">
+			<h1>상품수정</h1>
+			<a href="#" data-role="button" class="btnLogout">로그아웃</a>
+			<a href="#" data-role="button" data-rel="back">이전</a>			
+		</div>
+		
+		<div data-role="content">		
+			
+		</div>
+		<div data-role="footer" data-position="fixed">비트몰</div>
+	</div>
+	
 	
 </body>
 </html>
